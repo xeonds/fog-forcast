@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  phi-rank-query:
+    image: ubuntu:latest
+    working_dir: /app
+    command: /app/fog-forcast-linux-amd64
+    volumes:
+      - ./build:/app
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+    ports:
+      - "8001:8001"
+    restart: always
+    stdin_open: true
+    tty: true

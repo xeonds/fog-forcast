@@ -11,8 +11,5 @@ type Config struct {
 	// 数据库配置
 	lib.DatabaseConfig
 	// 数据目录配置
-	Data struct {
-		Difficulty string `yaml:"difficulty"`
-		Info       string `yaml:"info"`
-	}
+	OpenWeatherKey string `yaml:"openWeatherKey"`
 }

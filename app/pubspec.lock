@@ -62,6 +62,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bmflocation:
+    dependency: "direct main"
+    description:
+      name: flutter_bmflocation
+      sha256: "74a9d96c4e95cbcd1c8dadc0d05004c48032bda1eee6fa2dbddf9ff0cfbd94f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -210,3 +218,4 @@ packages:
     version: "13.0.0"
 sdks:
   dart: ">=3.3.2 <4.0.0"
+  flutter: ">=1.20.0"

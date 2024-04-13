@@ -1,30 +1,30 @@
 import 'package:app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class CityPage extends StatefulWidget {
-  final List<String> cities;
-  final String selectedPosition;
-
-  CityPage({required this.cities, required this.selectedPosition});
+  const CityPage({super.key});
 
   @override
-  _CityPageState createState() => _CityPageState();
+  CityPageState createState() => CityPageState();
 }
 
-class _CityPageState extends State<CityPage> {
+class CityPageState extends State<CityPage> {
+  List<String> cities = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pick a City'),
+        title: const Text('Cities'),
       ),
       body: ListView.builder(
-        itemCount: widget.cities.length,
+        itemCount: cities.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(widget.cities[index]),
+            title: Text(cities[index]),
             onTap: () {
-              String selectedCity = widget.cities[index];
+              // String selectedCity = widget.cities[index];
               HomePage.of(context).updateSelectedPosition(0);
             },
           );
@@ -35,14 +35,12 @@ class _CityPageState extends State<CityPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MapPage(
-                cities: widget.cities,
-              ),
+              builder: (context) => const MapPage(),
             ),
           ).then((pickedPosition) {
             if (pickedPosition != null) {
               setState(() {
-                widget.cities.add(pickedPosition);
+                cities.add(pickedPosition.toString());
               });
             }
           });
@@ -53,10 +51,23 @@ class _CityPageState extends State<CityPage> {
   }
 }
 
-class MapPage extends StatelessWidget {
-  final List<String> cities;
+class MapPage extends StatefulWidget {
+  const MapPage({super.key});
 
-  MapPage({required this.cities});
+  @override
+  State<MapPage> createState() => MapPageState();
+}
+
+class MapPageState extends State<MapPage> {
+  LatLng selectedPosition = LatLng(34, 108);
+  Marker selectedMarker = Marker(
+    point: LatLng(34, 108),
+    builder: (context) => const Icon(
+      Icons.location_on,
+      size: 50,
+      color: Colors.red,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -64,21 +75,44 @@ class MapPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pick a Position'),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Clickable Map'),
-          ],
+      body: FlutterMap(
+        options: MapOptions(
+          center: LatLng(34, 108), // Initial map center
+          zoom: 5.0, // Initial zoom level
+          onTap: _handleTap, // Handle tap event
         ),
+        mapController: MapController(),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+          ),
+          MarkerLayer(
+            markers: [selectedMarker],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          String pickedPosition = 'Picked Position';
-          Navigator.pop(context, pickedPosition);
+          Navigator.pop(context, selectedPosition);
         },
         child: const Icon(Icons.check),
       ),
     );
+  }
+
+  // Handle tap event on the map
+  void _handleTap(TapPosition pos, LatLng tappedPosition) {
+    setState(() {
+      selectedPosition = tappedPosition;
+      selectedMarker = Marker(
+        point: selectedPosition,
+        builder: (context) => const Icon(
+          Icons.location_on,
+          size: 50,
+          color: Colors.red,
+        ),
+      );
+    });
   }
 }

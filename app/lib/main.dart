@@ -18,14 +18,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true),
-      // darkTheme: ThemeData.dark(),
       home: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => HomePageState();
@@ -47,10 +46,7 @@ class HomePageState extends State<HomePage> {
       temperature: "",
       weatherCondition: "",
     ),
-    CityPage(
-      cities: [],
-      selectedPosition: "",
-    ),
+    const CityPage(),
   ];
 
   void updateSelectedPosition(int selectedPosition) {

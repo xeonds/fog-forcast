@@ -1,3 +1,4 @@
+import 'package:app/main.dart';
 import 'package:flutter/material.dart';
 
 class CityPage extends StatefulWidget {
@@ -23,9 +24,8 @@ class _CityPageState extends State<CityPage> {
           return ListTile(
             title: Text(widget.cities[index]),
             onTap: () {
-              // Handle city selection here
               String selectedCity = widget.cities[index];
-              // Do something with the selected city
+              HomePage.of(context).updateSelectedPosition(0);
             },
           );
         },

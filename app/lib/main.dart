@@ -25,14 +25,22 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState();
+
+  static HomePageState of(BuildContext context) {
+    final state = context.findAncestorStateOfType<HomePageState>();
+    if (state == null) {
+      throw Exception('HomePageState not found');
+    }
+    return state;
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+class HomePageState extends State<HomePage> {
+  int selectedIndex = 0;
   final List<Widget> _pages = [
     WeatherPage(
       cityName: "",
@@ -45,16 +53,22 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+  void updateSelectedPosition(int selectedPosition) {
+    setState(() {
+      selectedIndex = 0;
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: _pages[selectedIndex],
       bottomNavigationBar: NavigationBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         indicatorColor: Theme.of(context).colorScheme.inversePrimary,
@@ -68,7 +82,7 @@ class _HomePageState extends State<HomePage> {
               selectedIcon: Icon(Icons.map),
               label: 'City'),
         ],
-        selectedIndex: _selectedIndex,
+        selectedIndex: selectedIndex,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         onDestinationSelected: _onItemTapped,
       ),

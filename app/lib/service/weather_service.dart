@@ -9,4 +9,19 @@ class WeatherService extends ChangeNotifier {
   factory WeatherService() => _instance;
 
   WeatherService._internal();
+
+  void addCity(City city) {
+    cities.add(city);
+    notifyListeners();
+  }
+
+  void removeCity(City city) {
+    cities.remove(city);
+    notifyListeners();
+  }
+
+  void setSelectedCity(City city) {
+    selectedCity = city;
+    notifyListeners();
+  }
 }

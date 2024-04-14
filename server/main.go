@@ -21,5 +21,6 @@ func main() {
 	apiRouter.POST("/city/by_pos", handleGetCityByPos(db, config))
 	apiRouter.POST("/weather/by_city", handleGetWeather("city", config))
 	apiRouter.POST("/weather/by_pos", handleGetWeather("pos", config))
+	apiRouter.POST("/aqi/by_pos", handleGetAQIByPos(config))
 	router.Run(config.Server.Port)
 }

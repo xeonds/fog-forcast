@@ -23,7 +23,7 @@ class CityPage extends StatelessWidget {
           return ListTile(
             title: Text(weatherService.cities[index].name),
             onTap: () {
-              weatherService.selectedCity = weatherService.cities[index];
+              weatherService.setSelectedCity(weatherService.cities[index]);
               HomePage.of(context).updateSelectedPosition(1);
             },
           );
@@ -38,12 +38,15 @@ class CityPage extends StatelessWidget {
             ),
           ).then((pickedPosition) async {
             if (pickedPosition != null) {
-              var data = await fetchWeather(
+              var weatherData = await fetchWeather(
                   pickedPosition.latitude, pickedPosition.longitude);
-              weatherService.cities.add(City(
-                name: data['name'],
+              var airQualityData = await fetchAirQuality(
+                  pickedPosition.latitude, pickedPosition.longitude);
+              weatherService.addCity(City(
+                name: weatherData['name'],
                 position: pickedPosition,
-                data: data,
+                weatherData: weatherData,
+                airQualityData: airQualityData,
               ));
             }
           });
@@ -55,6 +58,19 @@ class CityPage extends StatelessWidget {
 
   Future<dynamic> fetchWeather(double lat, double lon) async {
     final url = Uri.parse('http://localhost:8901/api/v1/weather/by_pos');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'lat': lat.toString(),
+        'lon': lon.toString(),
+      }),
+    );
+    if (response.statusCode == 200) return json.decode(response.body);
+  }
+
+  Future<dynamic> fetchAirQuality(double lat, double lon) async {
+    final url = Uri.parse('http://localhost:8901/api/v1/aqi/by_pos');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -136,7 +152,12 @@ class MapPageState extends State<MapPage> {
 class City {
   final String name;
   final LatLng position;
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> weatherData;
+  final Map<String, dynamic> airQualityData;
 
-  City({required this.name, required this.position, required this.data});
+  City(
+      {required this.name,
+      required this.position,
+      required this.weatherData,
+      required this.airQualityData});
 }

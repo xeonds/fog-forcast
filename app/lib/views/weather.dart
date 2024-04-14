@@ -20,30 +20,38 @@ class WeatherPage extends StatelessWidget {
               children: [
                 ListTile(
                   title: Text(
-                    cityData.data['name'],
+                    cityData.weatherData['name'],
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    'Current Weather: ${cityData.data['weather'][0]['description']}',
+                    'Current Weather: ${cityData.weatherData['weather'][0]['description']}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
                 ListTile(
                   title: const Text('Temperature'),
-                  subtitle: Text('${cityData.data['main']['temp']}°C'),
+                  subtitle: Text('${cityData.weatherData['main']['temp']}°C'),
                 ),
                 ListTile(
                   title: const Text('Feels Like'),
-                  subtitle: Text('${cityData.data['main']['feels_like']}°C'),
+                  subtitle:
+                      Text('${cityData.weatherData['main']['feels_like']}°C'),
                 ),
                 ListTile(
                   title: const Text('Humidity'),
-                  subtitle: Text('${cityData.data['main']['humidity']}%'),
+                  subtitle:
+                      Text('${cityData.weatherData['main']['humidity']}%'),
                 ),
                 ListTile(
                   title: const Text('Wind Speed'),
-                  subtitle: Text('${cityData.data['wind']['speed']} m/s'),
+                  subtitle:
+                      Text('${cityData.weatherData['wind']['speed']} m/s'),
+                ),
+                ListTile(
+                  title: const Text('Air Quality'),
+                  subtitle: Text(
+                      '${cityData.airQualityData['value']} ${cityData.airQualityData['unit']}'),
                 ),
               ],
             ),

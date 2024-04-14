@@ -63,3 +63,22 @@ func handleGetCityByPos(db *gorm.DB, config *config.Config) gin.HandlerFunc {
 		}
 	}
 }
+
+func handleGetAQIByPos(config *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		request := new(struct {
+			Lat string `json:"lat"`
+			Lon string `json:"lon"`
+		})
+		if err := c.ShouldBindJSON(request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		aqi, err := service.GetAirQualityByPos(request.Lat, request.Lon, config.OpenWeatherKey)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, aqi)
+		}
+	}
+}

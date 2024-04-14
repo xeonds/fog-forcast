@@ -1,31 +1,30 @@
+import 'dart:convert';
 import 'package:app/main.dart';
+import 'package:app/service/weather_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-class CityPage extends StatefulWidget {
+class CityPage extends StatelessWidget {
   const CityPage({super.key});
 
   @override
-  CityPageState createState() => CityPageState();
-}
-
-class CityPageState extends State<CityPage> {
-  List<String> cities = [];
-  @override
   Widget build(BuildContext context) {
+    final weatherService = Provider.of<WeatherService>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cities'),
       ),
       body: ListView.builder(
-        itemCount: cities.length,
+        itemCount: weatherService.cities.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(cities[index]),
+            title: Text(weatherService.cities[index].name),
             onTap: () {
-              // String selectedCity = widget.cities[index];
-              HomePage.of(context).updateSelectedPosition(0);
+              weatherService.selectedCity = weatherService.cities[index];
+              HomePage.of(context).updateSelectedPosition(1);
             },
           );
         },
@@ -37,17 +36,34 @@ class CityPageState extends State<CityPage> {
             MaterialPageRoute(
               builder: (context) => const MapPage(),
             ),
-          ).then((pickedPosition) {
+          ).then((pickedPosition) async {
             if (pickedPosition != null) {
-              setState(() {
-                cities.add(pickedPosition.toString());
-              });
+              var data = await fetchWeather(
+                  pickedPosition.latitude, pickedPosition.longitude);
+              weatherService.cities.add(City(
+                name: data['name'],
+                position: pickedPosition,
+                data: data,
+              ));
             }
           });
         },
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<dynamic> fetchWeather(double lat, double lon) async {
+    final url = Uri.parse('http://localhost:8901/api/v1/weather/by_pos');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'lat': lat.toString(),
+        'lon': lon.toString(),
+      }),
+    );
+    if (response.statusCode == 200) return json.decode(response.body);
   }
 }
 
@@ -115,4 +131,12 @@ class MapPageState extends State<MapPage> {
       );
     });
   }
+}
+
+class City {
+  final String name;
+  final LatLng position;
+  final Map<String, dynamic> data;
+
+  City({required this.name, required this.position, required this.data});
 }

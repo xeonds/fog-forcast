@@ -14,13 +14,13 @@ type Weather struct {
 	Coord struct {
 		Lon float64 `json:"lon"`
 		Lat float64 `json:"lat"`
-	} `json:"coord"`
+	} `json:"coord" gorm:"serializer:json"`
 	Weather []struct {
 		ID          int    `json:"id"`
 		Main        string `json:"main"`
 		Description string `json:"description"`
 		Icon        string `json:"icon"`
-	} `json:"weather"`
+	} `json:"weather" gorm:"serializer:json"`
 	Base string `json:"base"`
 	Main struct {
 		Temp      float64 `json:"temp"`
@@ -31,19 +31,19 @@ type Weather struct {
 		Humidity  int     `json:"humidity"`
 		SeaLevel  int     `json:"sea_level"`
 		GrndLevel int     `json:"grnd_level"`
-	} `json:"main"`
+	} `json:"main" gorm:"serializer:json"`
 	Visibility int `json:"visibility"`
 	Wind       struct {
 		Speed float64 `json:"speed"`
 		Deg   int     `json:"deg"`
 		Gust  float64 `json:"gust"`
-	} `json:"wind"`
+	} `json:"wind" gorm:"serializer:json"`
 	Rain struct {
 		OneH float64 `json:"1h"`
-	} `json:"rain"`
+	} `json:"rain" gorm:"serializer:json"`
 	Clouds struct {
 		All int `json:"all"`
-	} `json:"clouds"`
+	} `json:"clouds" gorm:"serializer:json"`
 	Dt  int `json:"dt"`
 	Sys struct {
 		Type    int    `json:"type"`
@@ -51,7 +51,7 @@ type Weather struct {
 		Country string `json:"country"`
 		Sunrise int    `json:"sunrise"`
 		Sunset  int    `json:"sunset"`
-	} `json:"sys"`
+	} `json:"sys" gorm:"serializer:json"`
 	Timezone int    `json:"timezone"`
 	ID       int    `json:"id"`
 	CityId   uint32 `gorm:"not null" json:"city_id"`

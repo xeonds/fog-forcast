@@ -4,6 +4,7 @@ import (
 	"fog-forcast-server/config"
 	"fog-forcast-server/model"
 	"fog-forcast-server/service"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,18 +14,27 @@ import (
 func handleGetWeather(mode string, config *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		switch mode {
-		case "city":
-			lat := c.Query("lat")
-			lon := c.Query("lon")
-			weather, err := service.GetWeatherByPos(lat, lon, config.OpenWeatherKey)
+		case "pos":
+			request := new(struct {
+				Lat string `json:"lat"`
+				Lon string `json:"lon"`
+			})
+			if err := c.BindJSON(request); err != nil {
+				log.Println("[pos] bind failed")
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			weather, err := service.GetWeatherByPos(request.Lat, request.Lon, config.OpenWeatherKey)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			} else {
 				c.JSON(http.StatusOK, weather)
 			}
-		case "pos":
-			city := c.Query("city")
-			weather, err := service.GetWeatherByCityId(city, config.OpenWeatherKey)
+		case "city":
+			request := new(struct {
+				City string `json:"city"`
+			})
+			weather, err := service.GetWeatherByCityId(request.City, config.OpenWeatherKey)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			} else {

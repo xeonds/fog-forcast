@@ -10,9 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
-  flutter_weather_forecast: ^1.2.0
   flutter_map: ^4.0.0
   latlong2: ^0.8.2
+  http: ^0.13.6
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

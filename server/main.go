@@ -17,9 +17,9 @@ func main() {
 
 	router := gin.Default()
 	apiRouter := router.Group("/api/v1")
-	apiRouter.POST("/city/by_pos", handleGetCityByPos(db, config))
 	apiRouter.GET("/city", lib.GetAll[model.City](db, nil))
-	apiRouter.GET("/weather/by_city", handleGetWeather("city", config))
-	apiRouter.GET("/weather/by_pos", handleGetWeather("pos", config))
+	apiRouter.POST("/city/by_pos", handleGetCityByPos(db, config))
+	apiRouter.POST("/weather/by_city", handleGetWeather("city", config))
+	apiRouter.POST("/weather/by_pos", handleGetWeather("pos", config))
 	router.Run(config.Server.Port)
 }

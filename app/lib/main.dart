@@ -1,3 +1,5 @@
+import 'package:app/service/weather_service.dart';
+import 'package:provider/provider.dart';
 import 'package:app/views/city.dart';
 import 'package:app/views/weather.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +14,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fog Forcast',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true),
-      home: const HomePage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => WeatherService()),
+      ],
+      child: MaterialApp(
+        title: 'Fog Forcast',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+            useMaterial3: true),
+        home: const HomePage(),
+      ),
     );
   }
 }
@@ -40,24 +47,11 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  final List<Widget> _pages = [
-    WeatherPage(
-      cityName: "",
-      temperature: "",
-      weatherCondition: "",
-    ),
-    const CityPage(),
-  ];
+  final List<Widget> _pages = [const CityPage(), const WeatherPage()];
 
   void updateSelectedPosition(int selectedPosition) {
     setState(() {
-      selectedIndex = 0;
-    });
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
+      selectedIndex = selectedPosition;
     });
   }
 
@@ -70,17 +64,17 @@ class HomePageState extends State<HomePage> {
         indicatorColor: Theme.of(context).colorScheme.inversePrimary,
         destinations: const [
           NavigationDestination(
-              icon: Icon(Icons.home),
-              selectedIcon: Icon(Icons.home),
-              label: 'Weather'),
-          NavigationDestination(
               icon: Icon(Icons.map),
               selectedIcon: Icon(Icons.map),
               label: 'City'),
+          NavigationDestination(
+              icon: Icon(Icons.home),
+              selectedIcon: Icon(Icons.home),
+              label: 'Weather'),
         ],
         selectedIndex: selectedIndex,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        onDestinationSelected: _onItemTapped,
+        onDestinationSelected: updateSelectedPosition,
       ),
     );
   }

@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  phi-rank-query:
+  fog-forcast-server:
     image: ubuntu:latest
     working_dir: /app
     command: /app/fog-forcast-linux-amd64

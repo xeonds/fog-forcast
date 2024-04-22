@@ -15,7 +15,7 @@ windows-amd64:
 	GOOS=windows GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@.exe
 
 app:
-	(cd app && flutter build apk --release --split-per-abi ) && \
+	(cd app && fvm flutter build apk --release --split-per-abi ) && \
 	(mv ./app/build/app/outputs/apk/release/* ./build)
 
 run:
@@ -26,8 +26,8 @@ deploy: linux-amd64
 
 init:
 	(mkdir -p $(BINDIR)) & \
-	(cd judge && go mod tidy) & \
-	(cd app && flutter pub get)
+	(cd server && go mod tidy) & \
+	(cd app && fvm flutter pub get)
 
 clean:
 	rm -rf $(BINDIR)/$(NAME)-* $(BINDIR)/app-*

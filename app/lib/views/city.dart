@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CityPage extends StatelessWidget {
   const CityPage({super.key});
@@ -57,7 +58,9 @@ class CityPage extends StatelessWidget {
   }
 
   Future<dynamic> fetchWeather(double lat, double lon) async {
-    final url = Uri.parse('http://localhost:8901/api/v1/weather/by_pos');
+    final prefs = await SharedPreferences.getInstance();
+    final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
+    final url = Uri.parse('$serverUrl/api/v1/weather/by_pos');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -70,7 +73,9 @@ class CityPage extends StatelessWidget {
   }
 
   Future<dynamic> fetchAirQuality(double lat, double lon) async {
-    final url = Uri.parse('http://localhost:8901/api/v1/aqi/by_pos');
+    final prefs = await SharedPreferences.getInstance();
+    final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
+    final url = Uri.parse('$serverUrl/api/v1/aqi/by_pos');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

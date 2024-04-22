@@ -1,4 +1,5 @@
 import 'package:app/service/weather_service.dart';
+import 'package:app/views/setting.dart';
 import 'package:provider/provider.dart';
 import 'package:app/views/city.dart';
 import 'package:app/views/weather.dart';
@@ -47,7 +48,11 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  final List<Widget> _pages = [const CityPage(), const WeatherPage()];
+  final List<Widget> _pages = [
+    const CityPage(),
+    const WeatherPage(),
+    const SettingPage()
+  ];
 
   void updateSelectedPosition(int selectedPosition) {
     setState(() {
@@ -71,6 +76,10 @@ class HomePageState extends State<HomePage> {
               icon: Icon(Icons.home),
               selectedIcon: Icon(Icons.home),
               label: 'Weather'),
+          NavigationDestination(
+              icon: Icon(Icons.home),
+              selectedIcon: Icon(Icons.home),
+              label: 'Settings'),
         ],
         selectedIndex: selectedIndex,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,

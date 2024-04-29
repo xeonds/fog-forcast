@@ -1,0 +1,12 @@
+server:
+    port: ":8901"
+    insecureSkipVerify: true
+databaseconfig:
+    type: "sqlite"
+    host: ""
+    port: ""
+    user: ""
+    password: ""
+    db: "data.db"
+    migrate: true
+openWeatherKey: "db6c0e01460bfe6d99b20346b589a4f9"

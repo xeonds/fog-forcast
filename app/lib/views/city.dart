@@ -56,36 +56,6 @@ class CityPage extends StatelessWidget {
       ),
     );
   }
-
-  Future<dynamic> fetchWeather(double lat, double lon) async {
-    final prefs = await SharedPreferences.getInstance();
-    final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
-    final url = Uri.parse('$serverUrl/api/v1/weather/by_pos');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'lat': lat.toString(),
-        'lon': lon.toString(),
-      }),
-    );
-    if (response.statusCode == 200) return json.decode(response.body);
-  }
-
-  Future<dynamic> fetchAirQuality(double lat, double lon) async {
-    final prefs = await SharedPreferences.getInstance();
-    final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
-    final url = Uri.parse('$serverUrl/api/v1/aqi/by_pos');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'lat': lat.toString(),
-        'lon': lon.toString(),
-      }),
-    );
-    if (response.statusCode == 200) return json.decode(response.body);
-  }
 }
 
 class MapPage extends StatefulWidget {
@@ -155,14 +125,44 @@ class MapPageState extends State<MapPage> {
 }
 
 class City {
-  final String name;
+  String name;
   final LatLng position;
-  final Map<String, dynamic> weatherData;
-  final Map<String, dynamic> airQualityData;
+  Map<String, dynamic> weatherData;
+  Map<String, dynamic> airQualityData;
 
   City(
       {required this.name,
       required this.position,
       required this.weatherData,
       required this.airQualityData});
+}
+
+Future<dynamic> fetchWeather(double lat, double lon) async {
+  final prefs = await SharedPreferences.getInstance();
+  final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
+  final url = Uri.parse('$serverUrl/api/v1/weather/by_pos');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    }),
+  );
+  if (response.statusCode == 200) return json.decode(response.body);
+}
+
+Future<dynamic> fetchAirQuality(double lat, double lon) async {
+  final prefs = await SharedPreferences.getInstance();
+  final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
+  final url = Uri.parse('$serverUrl/api/v1/aqi/by_pos');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    }),
+  );
+  if (response.statusCode == 200) return json.decode(response.body);
 }

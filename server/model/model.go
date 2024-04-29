@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type City struct {
 	Id      uint32  `gorm:"primary_key;auto_increment" json:"id"`
 	Name    string  `gorm:"type:varchar(255);not null" json:"name"`
@@ -60,14 +58,24 @@ type Weather struct {
 }
 
 type AirQuality struct {
-	Id     uint32    `gorm:"primary_key;auto_increment" json:"id"`
-	Date   time.Time `gorm:"type:date;not null" json:"date"`
-	CityId uint32    `gorm:"not null" json:"city_id"`
-	Aqi    uint32    `gorm:"not null" json:"aqi"`
-	Pm25   uint32    `gorm:"not null" json:"pm25"`
-	Pm10   uint32    `gorm:"not null" json:"pm10"`
-	O3     uint32    `gorm:"not null" json:"o3"`
-	Co     uint32    `gorm:"not null" json:"co"`
-	So2    uint32    `gorm:"not null" json:"so2"`
-	No2    uint32    `gorm:"not null" json:"no2"`
+	Coord struct {
+		Lon float64 `json:"lon"`
+		Lat float64 `json:"lat"`
+	} `json:"coord" gorm:"serializer:json"`
+	List []struct {
+		Dt   int `json:"dt"`
+		Main struct {
+			Aqi int `json:"aqi"`
+		} `json:"main"`
+		Components struct {
+			Co   float64 `json:"co"`
+			No   float64 `json:"no"`
+			No2  float64 `json:"no2"`
+			O3   float64 `json:"o3"`
+			So2  float64 `json:"so2"`
+			Pm25 float64 `json:"pm2_5"`
+			Pm10 float64 `json:"pm10"`
+			Nh3  float64 `json:"nh3"`
+		} `json:"components"`
+	} `json:"list"`
 }

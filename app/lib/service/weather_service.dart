@@ -24,4 +24,11 @@ class WeatherService extends ChangeNotifier {
     selectedCity = city;
     notifyListeners();
   }
+
+  void updateData() async {
+    selectedCity?.weatherData = await fetchWeather(
+        selectedCity!.position.latitude, selectedCity!.position.longitude);
+    selectedCity?.airQualityData = await fetchAirQuality(
+        selectedCity!.position.latitude, selectedCity!.position.longitude);
+  }
 }

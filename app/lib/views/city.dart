@@ -3,6 +3,7 @@ import 'package:app/main.dart';
 import 'package:app/service/weather_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -56,36 +57,6 @@ class CityPage extends StatelessWidget {
       ),
     );
   }
-
-  Future<dynamic> fetchWeather(double lat, double lon) async {
-    final prefs = await SharedPreferences.getInstance();
-    final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
-    final url = Uri.parse('$serverUrl/api/v1/weather/by_pos');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'lat': lat.toString(),
-        'lon': lon.toString(),
-      }),
-    );
-    if (response.statusCode == 200) return json.decode(response.body);
-  }
-
-  Future<dynamic> fetchAirQuality(double lat, double lon) async {
-    final prefs = await SharedPreferences.getInstance();
-    final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
-    final url = Uri.parse('$serverUrl/api/v1/aqi/by_pos');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'lat': lat.toString(),
-        'lon': lon.toString(),
-      }),
-    );
-    if (response.statusCode == 200) return json.decode(response.body);
-  }
 }
 
 class MapPage extends StatefulWidget {
@@ -109,33 +80,57 @@ class MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pick a Position'),
-      ),
-      body: FlutterMap(
-        options: MapOptions(
-          center: LatLng(34, 108), // Initial map center
-          zoom: 5.0, // Initial zoom level
-          onTap: _handleTap, // Handle tap event
+        appBar: AppBar(
+          title: const Text('Pick a Position'),
         ),
-        mapController: MapController(),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+        body: FlutterMap(
+          options: MapOptions(
+            center: LatLng(34, 108), // Initial map center
+            zoom: 5.0, // Initial zoom level
+            onTap: _handleTap, // Handle tap event
           ),
-          MarkerLayer(
-            markers: [selectedMarker],
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context, selectedPosition);
-        },
-        child: const Icon(Icons.check),
-      ),
-    );
+          mapController: MapController(),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+            ),
+            MarkerLayer(
+              markers: [selectedMarker],
+            ),
+          ],
+        ),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              onPressed: () async {
+                Position position = await Geolocator.getCurrentPosition(
+                    desiredAccuracy: LocationAccuracy.high);
+                setState(() {
+                  selectedPosition =
+                      LatLng(position.latitude, position.longitude);
+                  selectedMarker = Marker(
+                    point: selectedPosition,
+                    builder: (context) => const Icon(
+                      Icons.location_on,
+                      size: 50,
+                      color: Colors.red,
+                    ),
+                  );
+                });
+              },
+              child: const Icon(Icons.gps_fixed),
+            ),
+            const SizedBox(height: 16.0),
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.pop(context, selectedPosition);
+              },
+              child: const Icon(Icons.check),
+            ),
+          ],
+        ));
   }
 
   // Handle tap event on the map
@@ -155,14 +150,44 @@ class MapPageState extends State<MapPage> {
 }
 
 class City {
-  final String name;
+  String name;
   final LatLng position;
-  final Map<String, dynamic> weatherData;
-  final Map<String, dynamic> airQualityData;
+  Map<String, dynamic> weatherData;
+  Map<String, dynamic> airQualityData;
 
   City(
       {required this.name,
       required this.position,
       required this.weatherData,
       required this.airQualityData});
+}
+
+Future<dynamic> fetchWeather(double lat, double lon) async {
+  final prefs = await SharedPreferences.getInstance();
+  final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
+  final url = Uri.parse('$serverUrl/api/v1/weather/by_pos');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    }),
+  );
+  if (response.statusCode == 200) return json.decode(response.body);
+}
+
+Future<dynamic> fetchAirQuality(double lat, double lon) async {
+  final prefs = await SharedPreferences.getInstance();
+  final serverUrl = prefs.getString("serverUrl") ?? "http://localhost:8901";
+  final url = Uri.parse('$serverUrl/api/v1/aqi/by_pos');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+    }),
+  );
+  if (response.statusCode == 200) return json.decode(response.body);
 }

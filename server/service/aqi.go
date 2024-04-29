@@ -5,12 +5,20 @@ import (
 	"fmt"
 	"fog-forcast-server/model"
 	"net/http"
+	"time"
 )
 
-const airQualityUrl = "https://api.openweathermap.org/data/2.5/air_pollution"
+const (
+	airQualityUrl = "https://api.openweathermap.org/data/2.5/air_pollution"
+	sevenDaysAgo  = 7 * 24 * time.Hour
+)
 
 func GetAirQualityByPos(lat, lon, apiKey string) (*model.AirQuality, error) {
-	response, err := http.Get(fmt.Sprintf("%s?lat=%s&lon=%s&appid=%s", airQualityUrl, lat, lon, apiKey))
+	end := time.Now().Unix()
+	start := time.Now().Add(-sevenDaysAgo).Unix()
+
+	url := fmt.Sprintf("%s/history?lat=%s&lon=%s&start=%d&end=%d&appid=%s", airQualityUrl, lat, lon, start, end, apiKey)
+	response, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
